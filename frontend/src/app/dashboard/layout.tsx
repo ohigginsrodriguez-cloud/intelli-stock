@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex items-center justify-between h-16 px-6 border-b border-border">
           <Link href="/dashboard" className="flex items-center gap-2">
             <PackageSearch className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">IntelliStock</span>
+            <span className="text-lg font-bold">InteliStock</span>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
             <X className="h-5 w-5" />

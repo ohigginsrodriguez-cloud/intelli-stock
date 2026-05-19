@@ -19,15 +19,15 @@ class Command(BaseCommand):
         )
 
         # Crear usuario admin
-        if not Usuario.objects.filter(correo='admin@intellistock.com').exists():
+        if not Usuario.objects.filter(correo='admin@intelistock.com').exists():
             Usuario.objects.create_superuser(
-                correo='admin@intellistock.com',
-                nombre='Admin IntelliStock',
+                correo='admin@intelistock.com',
+                nombre='Admin InteliStock',
                 password='admin123',
                 negocio=negocio,
                 rol='admin',
             )
-            self.stdout.write('  Usuario admin creado: admin@intellistock.com / admin123')
+            self.stdout.write('  Usuario admin creado: admin@intelistock.com / admin123')
 
         # Crear suscripción
         ahora = timezone.now()

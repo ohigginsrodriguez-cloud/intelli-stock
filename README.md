@@ -1,4 +1,4 @@
-# IntelliStock
+# InteliStock
 
 Plataforma digital que analiza ventas, alerta sobre stock crítico, y recomienda decisiones de inventario para PYMEs. Backend Django 5.2 + DRF, frontend Next.js 16 + Tailwind CSS, base de datos PostgreSQL.
 
@@ -19,7 +19,7 @@ Plataforma digital que analiza ventas, alerta sobre stock crítico, y recomienda
 
 ---
 
-## Diseño original de BD (`bd_sugerida.txt`)
+## Diseño original de BD
 
 ```
 negocio (id_negocio, nombre, tipo_negocio, fecha_registro)
@@ -129,21 +129,21 @@ erDiagram
 ## Mapa completo de archivos
 
 ```
-intellistock_simple/
+intelistock_simple/
 │
-├── run.sh                           ← Script único para arrancar todo
 ├── README.md                        ← Esta documentación
-├── errores.txt                      ← Log de errores del navegador (debug)
+├── consultas_bd.txt                 ← 10 consultas SQL útiles
 │
-├── backend/
+├── backend/                         ★ Backend Django 5.2 ★
 │   ├── manage.py                    ← Entry point de Django
+│   ├── requirements.txt             ← Dependencias Python
+│   ├── .env                         ← Variables de entorno (BD, secrets)
 │   │
-│   ├── intellistock/                ← Carpeta de configuración del proyecto
+│   ├── config/                      ← Configuración del proyecto Django
 │   │   ├── __init__.py
 │   │   ├── settings.py              ← BD, JWT, CORS, REST Framework, apps
 │   │   ├── urls.py                  ← Rutas raíz: /admin/ + /api/
-│   │   ├── wsgi.py                  ← WSGI para producción
-│   │   └── asgi.py                  ← ASGI (no usado)
+│   │   └── wsgi.py                  ← WSGI para producción
 │   │
 │   └── inventario/                  ← ★ LA ÚNICA APP. Contiene TODO ★
 │       ├── __init__.py
@@ -155,55 +155,49 @@ intellistock_simple/
 │       ├── urls.py                  ← 29 rutas (ver sección API)
 │       ├── alerts.py                ← Motor de alertas (7 reglas)
 │       ├── predictions.py           ← Predicciones (promedio móvil)
-│       ├── tests.py                 ← Tests (vacíos por ahora)
 │       └── management/
 │           └── commands/
 │               └── seed_data.py     ← Poblador de BD con datos de ejemplo
 │
-└── frontend/
-    ├── .env.local                   ← NEXT_PUBLIC_API_URL=http://localhost:8000/api
-    ├── package.json                 ← Dependencias y scripts
-    ├── next.config.ts               ← Config de Next.js
-    ├── tailwind.config.ts           ← Tema (colores, fuentes)
-    ├── tsconfig.json                ← TypeScript config
-    │
-    └── src/
-        ├── lib/
-        │   └── api.ts               ← ★ Cliente Axios con JWT (ver auth flow)
-        │
-        ├── components/
-        │   └── ui/
-        │       ├── DataTable.tsx     ← Tabla genérica: paginación, loading, vacío
-        │       ├── FormField.tsx     ← Input, Select, Button reutilizables
-        │       ├── Modal.tsx         ← Modal overlay genérico
-        │       └── StatusBadge.tsx   ← Badge success/warning/danger
-        │
-        └── app/                      ← Next.js App Router
-            ├── layout.tsx            ← Layout global (fuentes, metadata)
-            ├── page.tsx              ← Landing page
-            ├── globals.css           ← Estilos Tailwind
-            │
-            ├── login/
-            │   └── page.tsx          ← Login form
-            │
-            ├── register/
-            │   └── page.tsx          ← Registro (negocio + usuario)
-            │
-            └── dashboard/
-                ├── layout.tsx        ← Sidebar + Header + auth check
-                ├── page.tsx          ← KPIs (ventas hoy, mes, stock bajo, ingresos)
-                ├── productos/
-                │   └── page.tsx      ← CRUD productos con DataTable + Modal
-                ├── ventas/
-                │   └── page.tsx      ← CRUD ventas con detalle de productos
-                ├── compras/
-                │   └── page.tsx      ← CRUD compras con detalle de productos
-                ├── proveedores/
-                │   └── page.tsx      ← CRUD proveedores
-                ├── alertas/
-                │   └── page.tsx      ← Lista de alertas y recomendaciones
-                └── reportes/
-                    └── page.tsx      ← 3 reportes: ventas, inventario, márgenes
+├── frontend/                        ★ Frontend Next.js 16 ★
+│   ├── .env.local                   ← NEXT_PUBLIC_API_URL
+│   ├── package.json                 ← Dependencias y scripts
+│   ├── next.config.ts               ← Config de Next.js
+│   ├── tsconfig.json                ← TypeScript config
+│   │
+│   └── src/
+│       ├── lib/
+│       │   └── api.ts               ← ★ Cliente Axios con JWT
+│       ├── components/
+│       │   ├── PredictionCard.tsx    ← Componente de predicción
+│       │   └── ui/
+│       │       ├── DataTable.tsx     ← Tabla genérica: paginación, loading, vacío
+│       │       ├── FormField.tsx     ← Input, Select, Button reutilizables
+│       │       ├── Modal.tsx         ← Modal overlay genérico
+│       │       └── StatusBadge.tsx   ← Badge success/warning/danger
+│       │
+│       └── app/                      ← Next.js App Router
+│           ├── layout.tsx            ← Layout global (fuentes, metadata)
+│           ├── page.tsx              ← Landing page
+│           ├── globals.css           ← Estilos Tailwind
+│           ├── login/ ─── page.tsx   ← Login form
+│           ├── register/ ─── page.tsx← Registro (negocio + usuario)
+│           └── dashboard/
+│               ├── layout.tsx        ← Sidebar + Header + auth check
+│               ├── page.tsx          ← KPIs (dashboard principal)
+│               ├── productos/ ─── page.tsx
+│               ├── ventas/ ─── page.tsx
+│               ├── compras/ ─── page.tsx
+│               ├── proveedores/ ─── page.tsx
+│               ├── alertas/ ─── page.tsx
+│               └── reportes/ ─── page.tsx
+│
+├── scripts/                         ★ Scripts de utilidad ★
+│   └── run.sh                       ← Script único para arrancar todo
+│
+└── docs/                            ★ Documentación técnica ★
+    ├── modelo_bd.md                 ← Modelo BD, normalización 1FN-2FN-3FN
+    └── errores.txt                  ← Log de errores del navegador (debug)
 ```
 
 ---
@@ -307,7 +301,7 @@ Algoritmo de promedio móvil simple (no necesita scikit-learn ni numpy):
 
 Puebla la BD con:
 - 1 negocio (Tienda Ejemplo)
-- 1 admin (admin@intellistock.com / admin123)
+- 1 admin (admin@intelistock.com / admin123)
 - 1 suscripción premium
 - 5 proveedores (con email)
 - 15 productos (abarrotes mexicanos típicos)
@@ -460,21 +454,21 @@ El frontend NO hace refresh automático actualmente. Si el access token expira (
 |----------|-------|
 | Host | `localhost` |
 | Puerto | `5432` |
-| Base de datos | `intellistock` |
-| Usuario | `intellistock` |
-| Contraseña | `intellistock123` |
+| Base de datos | `intelistock` |
+| Usuario | `intelistock` |
+| Contraseña | `intelistock123` |
 
 ### Acceder desde terminal
 
 ```bash
 # Directo (pide contraseña)
-psql -U intellistock -h localhost -d intellistock
+psql -U intelistock -h localhost -d intelistock
 
 # Sin interactividad
-PGPASSWORD=intellistock123 psql -U intellistock -h localhost -d intellistock -c "SELECT * FROM inventario_producto LIMIT 5;"
+PGPASSWORD=intelistock123 psql -U intelistock -h localhost -d intelistock -c "SELECT * FROM inventario_producto LIMIT 5;"
 
 # Como postgres (sin contraseña)
-sudo -u postgres psql -d intellistock
+sudo -u postgres psql -d intelistock
 ```
 
 ### Comandos útiles de psql
@@ -491,8 +485,8 @@ SELECT p.nombre, p.stock, p.stock_minimo FROM inventario_producto p WHERE p.stoc
 ### Resetear BD desde cero
 
 ```bash
-sudo -u postgres psql -c "DROP DATABASE IF EXISTS intellistock;"
-sudo -u postgres psql -c "CREATE DATABASE intellistock OWNER intellistock;"
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS intelistock;"
+sudo -u postgres psql -c "CREATE DATABASE intelistock OWNER intelistock;"
 cd backend && python manage.py migrate && python manage.py seed_data
 rm -rf frontend/.next  # Limpiar caché de frontend
 ```
@@ -501,18 +495,18 @@ rm -rf frontend/.next  # Limpiar caché de frontend
 
 ## Configuración del proyecto
 
-### Backend (`backend/intellistock/settings.py`)
+### Backend (`backend/config/settings.py`)
 
 Variables de entorno (`.env` en `backend/`):
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
-| `SECRET_KEY` | `intellistock-dev-key-change-in-production` | Clave secreta Django |
+| `SECRET_KEY` | `intelistock-dev-key-change-in-production` | Clave secreta Django |
 | `DEBUG` | `True` | Modo debug |
 | `ALLOWED_HOSTS` | `*` | Hosts permitidos |
-| `DB_NAME` | `intellistock` | Nombre BD |
-| `DB_USER` | `intellistock` | Usuario BD |
-| `DB_PASSWORD` | `intellistock123` | Contraseña BD |
+| `DB_NAME` | `intelistock` | Nombre BD |
+| `DB_USER` | `intelistock` | Usuario BD |
+| `DB_PASSWORD` | `intelistock123` | Contraseña BD |
 | `DB_HOST` | `localhost` | Host BD |
 | `DB_PORT` | `5432` | Puerto BD |
 
@@ -533,7 +527,7 @@ Configuraciones clave en duro (no .env):
 
 ## API Endpoints (29 rutas)
 
-Todas las rutas comienzan con `/api/` (definido en `intellistock/urls.py`) y se resuelven en `inventario/urls.py`.
+Todas las rutas comienzan con `/api/` (definido en `config/urls.py`) y se resuelven en `inventario/urls.py`.
 
 ### Autenticación (públicas)
 
@@ -669,8 +663,8 @@ Cada ViewSet soporta GET (list), POST (create), PATCH (partial_update), DELETE (
 ## Inicio rápido
 
 ```bash
-cd /home/pulpo/Documents/intellistock_simple
-./run.sh
+cd /home/pulpo/Documents/intelistock_simple
+./scripts/run.sh
 ```
 
 O manualmente:
@@ -699,7 +693,7 @@ npm run dev
 
 ### Credenciales
 
-- **Email:** `admin@intellistock.com`
+- **Email:** `admin@intelistock.com`
 - **Contraseña:** `admin123`
 
 ---
@@ -715,9 +709,9 @@ sudo service postgresql start
 ### Base de datos no existe
 
 ```bash
-sudo -u postgres psql -c "CREATE USER intellistock WITH PASSWORD 'intellistock123';"
-sudo -u postgres psql -c "CREATE DATABASE intellistock OWNER intellistock;"
-sudo -u postgres psql -c "ALTER USER intellistock CREATEDB;"
+sudo -u postgres psql -c "CREATE USER intelistock WITH PASSWORD 'intelistock123';"
+sudo -u postgres psql -c "CREATE DATABASE intelistock OWNER intelistock;"
+sudo -u postgres psql -c "ALTER USER intelistock CREATEDB;"
 ```
 
 ### Puerto en uso
@@ -739,8 +733,8 @@ cd frontend && npm run dev
 La BD tiene datos previos. Resetea:
 
 ```bash
-sudo -u postgres psql -c "DROP DATABASE IF EXISTS intellistock;"
-sudo -u postgres psql -c "CREATE DATABASE intellistock OWNER intellistock;"
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS intelistock;"
+sudo -u postgres psql -c "CREATE DATABASE intelistock OWNER intelistock;"
 cd backend && python manage.py migrate && python manage.py seed_data
 ```
 
@@ -762,7 +756,7 @@ Advertencia de seguridad en desarrollo por clave corta. No afecta funcionalidad.
 ```bash
 cd backend
 python manage.py createsuperuser
-# Email: admin@intellistock.com
+# Email: admin@intelistock.com
 # Password: (elige una)
 ```
 
@@ -776,7 +770,7 @@ Luego en http://localhost:8000/admin/ puedes ver y editar todas las tablas.
 # 1. Login
 TOKEN=$(curl -s http://localhost:8000/api/auth/login/ \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@intellistock.com","password":"admin123"}' \
+  -d '{"email":"admin@intelistock.com","password":"admin123"}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['access'])")
 
 # 2. Usar el token

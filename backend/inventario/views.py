@@ -564,7 +564,7 @@ def export_pdf(request, tipo):
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
     elements = []
-    elements.append(Paragraph(f'IntelliStock - Reporte de {tipo}', styles['Title']))
+    elements.append(Paragraph(f'InteliStock - Reporte de {tipo}', styles['Title']))
     elements.append(Spacer(1, 0.25 * inch))
 
     negocio_id = user.negocio_id

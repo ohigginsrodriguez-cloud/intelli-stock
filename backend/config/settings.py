@@ -6,7 +6,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'intellistock-dev-key-change-in-production')
+SECRET_KEY = os.getenv('SECRET_KEY', 'intelistock-dev-key-change-in-production')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
@@ -34,7 +34,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'intellistock.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -51,14 +51,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'intellistock.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'intellistock'),
-        'USER': os.getenv('DB_USER', 'intellistock'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'intellistock123'),
+        'NAME': os.getenv('DB_NAME', 'intelistock'),
+        'USER': os.getenv('DB_USER', 'intelistock'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'intelistock123'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }

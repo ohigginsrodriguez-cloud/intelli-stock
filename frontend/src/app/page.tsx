@@ -32,7 +32,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <PackageSearch className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold text-foreground">IntelliStock</span>
+              <span className="text-xl font-bold text-foreground">InteliStock</span>
             </div>
             <nav className="flex items-center gap-4">
               <Link
@@ -57,7 +57,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-6">
               <PackageSearch className="h-12 w-12 text-primary" />
-              <span className="text-5xl sm:text-6xl font-bold text-foreground tracking-tight">IntelliStock</span>
+              <span className="text-5xl sm:text-6xl font-bold text-foreground tracking-tight">InteliStock</span>
             </div>
             <p className="text-lg text-muted max-w-xl mx-auto mb-10">Plataforma inteligente de gestión de inventarios</p>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
@@ -67,7 +67,7 @@ export default function Home() {
             <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
               Convierte tus datos de ventas en decisiones inteligentes. Evita
               pérdidas por desabasto o exceso, optimiza tu flujo de efectivo y
-              aumenta tus ganancias con IntelliStock.
+              aumenta tus ganancias con InteliStock.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link
@@ -146,7 +146,7 @@ export default function Home() {
 
       <footer className="border-t border-border py-8 px-4">
         <div className="max-w-6xl mx-auto text-center text-sm text-muted">
-          <p>&copy; {new Date().getFullYear()} IntelliStock. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} InteliStock. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

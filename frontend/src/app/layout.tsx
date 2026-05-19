@@ -6,7 +6,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "IntelliStock - Gestión Inteligente de Inventarios",
+  title: "InteliStock - Gestión Inteligente de Inventarios",
   description:
     "Plataforma digital que analiza ventas y recomienda decisiones de inventario para PYMEs.",
 };

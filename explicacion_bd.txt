@@ -1,0 +1,294 @@
+CÓMO FUNCIONA LA BASE DE DATOS EN DJANGO E INTELISTOCK
+======================================================
+
+(Escrito para alguien que empieza)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  1. ¿DÓNDE SE DEFINEN LAS TABLAS?                          │
+└─────────────────────────────────────────────────────────────┘
+
+Las tablas se definen en el archivo:
+
+    backend/inventario/models.py
+
+Ahí escribimos CLASES de Python. Cada clase es una tabla de la BD.
+Cada atributo de la clase es una columna de esa tabla.
+
+Ejemplo:
+
+    class Producto(models.Model):              → crea la tabla "producto"
+        id_producto = models.AutoField(...)    → columna "id_producto" (número autoincremental)
+        nombre = models.CharField(...)         → columna "nombre" (texto)
+        precio_venta = models.DecimalField(...) → columna "precio_venta" (número decimal)
+        stock = models.IntegerField(...)       → columna "stock" (número entero)
+
+¿Por qué la tabla se llama "producto" y no otra cosa?
+Porque dentro de la clase hay:
+
+    class Meta:
+        db_table = 'producto'
+
+Eso le dice a Django: "cuando crees la tabla en la BD, llámala 'producto'".
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  2. ¿CÓMO CREA DJANGO LAS TABLAS? (MIGRACIONES)            │
+└─────────────────────────────────────────────────────────────┘
+
+Django NO crea las tablas solito en el momento que escribes models.py.
+Hay un proceso de DOS pasos:
+
+  PASO 1: python manage.py makemigrations
+  ───────────────────────────────────────
+  Django lee models.py y genera un archivo de "migración".
+  Una migración es un archivo Python (en migrations/0001_initial.py)
+  que contiene las instrucciones para crear/modificar tablas.
+  Es como un "plano" de los cambios.
+
+  PASO 2: python manage.py migrate
+  ─────────────────────────────────
+  Django ejecuta ese archivo de migración contra la BD real.
+  Ahí sí se ejecuta el "CREATE TABLE" en PostgreSQL.
+
+  ╔══════════════════════════════════════════════════════════╗
+  ║  models.py  ──makemigrations──>  0001_initial.py        ║
+  ║   (clases)                      (instrucciones SQL)     ║
+  ║                                          │              ║
+  ║                                     migrate             ║
+  ║                                          │              ║
+  ║                                          v              ║
+  ║                                    PostgreSQL           ║
+  ║                                  (tablas reales)        ║
+  ╚══════════════════════════════════════════════════════════╝
+
+Los archivos de migración están en:
+    backend/inventario/migrations/0001_initial.py
+
+Si abres ese archivo, verás cosas como:
+
+    migrations.CreateModel(name='Producto', ...)
+    migrations.AddField(...)
+
+Eso NO es SQL, es Python. Pero cuando haces migrate, Django lo convierte
+automáticamente a:
+
+    CREATE TABLE producto (
+        id_producto SERIAL PRIMARY KEY,
+        nombre VARCHAR(255) NOT NULL,
+        ...
+    );
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  3. ¿Y LA CONEXIÓN A LA BD?                                │
+└─────────────────────────────────────────────────────────────┘
+
+Se configura en:
+
+    backend/config/settings.py
+
+Allí hay un diccionario llamado DATABASES que dice:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',   ← motor: PostgreSQL
+            'NAME': 'intelistock',                      ← nombre de la BD
+            'USER': 'intelistock',                      ← usuario
+            'PASSWORD': 'intelistock123',               ← contraseña
+            'HOST': 'localhost',                         ← dónde está
+            'PORT': '5432',                              ← puerto
+        }
+    }
+
+Pero esos valores no están escritos directamente, se leen de un archivo
+.env usando la librería python-dotenv. El archivo está en:
+
+    backend/.env
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  4. LAS TABLAS QUE EXISTEN (Y PARA QUÉ SIRVEN)             │
+└─────────────────────────────────────────────────────────────┘
+
+  negocio         → El negocio/empresa dueña de los datos (todo cuelga de aquí)
+
+  usuario         → Las personas que usan el sistema (dueño, empleados)
+
+  suscripcion     → El plan que paga el negocio (básico, intermedio, premium)
+
+  producto        → Los productos que se venden (nombre, precio, stock, etc.)
+
+  venta           → Las ventas realizadas (fecha, total)
+
+  detalle_venta   → Cada producto que se vendió en una venta
+                    (Ej: Venta #1 tiene 2 DetalleVenta: "Coca x3" y "Pan x1")
+
+  proveedor       → Quienes nos venden productos para revender
+
+  compra          → Las compras que le hicimos a los proveedores
+
+  detalle_compra  → Cada producto que compramos en una compra
+
+  alerta          → Avisos automáticos (stock bajo, productos sin vender, etc.)
+
+  recomendacion   → Sugerencias automáticas (reabastecer, poner en promoción)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  5. CÓMO SE RELACIONAN LAS TABLAS (FOREIGN KEYS)           │
+└─────────────────────────────────────────────────────────────┘
+
+Casi todas las tablas tienen un ForeignKey (FK) a "negocio".
+Eso significa que cada negocio tiene SUS propios productos, SUS ventas, etc.
+
+Ejemplo visual:
+
+    negocio (el dueño)
+      │
+      ├── producto (sus productos)
+      ├── proveedor (sus proveedores)
+      ├── venta ─── detalle_venta ─── producto
+      │                                    ↑
+      └── compra ─── detalle_compra ───────┘
+
+  Venta ──> DetalleVenta ──> Producto
+  Una venta tiene varios detalles, y cada detalle apunta a un producto.
+
+  Compra ──> DetalleCompra ──> Producto
+  Igual, una compra tiene varios detalles con sus productos.
+
+El "on_delete" en la FK significa "¿qué pasa si borro el registro padre?":
+  - CASCADE → si borro el negocio, se borran todos sus productos, ventas, etc.
+  - PROTECT → no me deja borrar un producto si ya tiene ventas (protege datos)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  6. ¿CÓMO SE USA LA BD DESDE LA APP? (FLUJO COMPLETO)      │
+└─────────────────────────────────────────────────────────────┐
+
+Este es el camino que recorre un dato desde que el usuario lo pide
+hasta que llega a su pantalla:
+
+  FRONTEND (React / navegador)
+  │
+  │  El usuario hace clic en "Ver productos"
+  │
+  ▼
+  PETICIÓN HTTP (https://.../products/)
+  │
+  │  El frontend manda un request a la URL de la API
+  │
+  ▼
+  URLS (backend/inventario/urls.py)
+  │
+  │  Django revisa la URL y ve que /products/ corresponde a
+  │  ProductoViewSet
+  │
+  ▼
+  VIEWS (backend/inventario/views.py)
+  │
+  │  El ViewSet recibe la petición.
+  │  Llama a Producto.objects.filter(negocio=mi_negocio)
+  │
+  ▼
+  MODELS (backend/inventario/models.py)  ← capa ORM
+  │
+  │  Django ORM traduce eso a SQL:
+  │  SELECT * FROM producto WHERE negocio_id = 1
+  │
+  ▼
+  PostgreSQL (la BD)
+  │
+  │  La BD ejecuta el SQL y devuelve los datos
+  │
+  ▼
+  SERIALIZERS (backend/inventario/serializers.py)
+  │
+  │  Convierte los datos de Python a JSON
+  │  (ej: el objeto Producto → {"id": 1, "nombre": "Coca", ...})
+  │
+  ▼
+  FRONTEND (React)
+  │
+  │  Recibe el JSON y lo pinta en la pantalla
+  │  (tabla, tarjetas, etc.)
+  │
+  ▼
+  El usuario VE los productos en su pantalla ✓
+
+Diagrama simplificado:
+
+  React  ──HTTP──>  urls.py  ──>  views.py  ──ORM──>  PostgreSQL
+    │                                                      │
+    └────────────── JSON (vía serializers) <───────────────┘
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  7. ¿QUÉ ES EL ORM DE DJANGO?                              │
+└─────────────────────────────────────────────────────────────┘
+
+ORM = Object-Relational Mapping.
+Es un traductor automático entre Python y SQL.
+
+En lugar de escribir SQL a mano:
+
+    SELECT * FROM producto WHERE stock = 0;
+
+Escribes Python:
+
+    Producto.objects.filter(stock=0)
+
+Django ORM convierte ese Python a SQL automáticamente.
+
+Algunos ejemplos:
+
+  Python (ORM)                         →  SQL que genera
+  ───────────────────────────────────     ──────────────────────────────
+  Producto.objects.all()                  SELECT * FROM producto
+  Producto.objects.filter(stock=0)        SELECT * FROM producto WHERE stock=0
+  Producto.objects.get(id=1)              SELECT * FROM producto WHERE id=1 LIMIT 1
+  Producto.objects.count()                SELECT COUNT(*) FROM producto
+  Producto.objects.order_by('nombre')     SELECT * FROM producto ORDER BY nombre
+
+  # Crear un producto (INSERT)
+  Producto.objects.create(
+      nombre='Coca Cola',
+      precio_venta=20,
+      costo=15,
+      stock=10,
+      negocio=mi_negocio
+  )
+
+  Eso genera: INSERT INTO producto (nombre, precio_venta, ...) VALUES (...)
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  8. LAS CONSULTAS SQL QUE ESCRIBIMOS vs EL ORM              │
+└─────────────────────────────────────────────────────────────┘
+
+Tú escribiste consultas SQL en consultas_bd.txt para entender los datos.
+Pero la app REAL no usa SQL; usa el ORM de Django.
+
+  Tú (aprendiendo)          → SQL directo en PostgreSQL
+  La app funcionando        → Python (ORM) que internamente genera SQL
+
+Ambos métodos llegan a los mismos datos, solo cambia cómo los pides.
+
+
+┌─────────────────────────────────────────────────────────────┐
+│  GLOSARIO RÁPIDO                                           │
+└─────────────────────────────────────────────────────────────┘
+
+  BD / Base de datos     = Lugar donde se guarda toda la información
+  Tabla                  = Como una hoja de Excel con filas y columnas
+  Columna / Campo        = Una celda del Excel (nombre, precio, stock)
+  Fila / Registro        = Un renglón del Excel (un producto, una venta)
+  Primary Key (PK)       = ID único que identifica cada fila (como el nº de serie)
+  Foreign Key (FK)       = Una columna que apunta al ID de otra tabla (relación)
+  Migración              = El "plano" que Django usa para construir/modificar tablas
+  ORM                    = Traductor de Python a SQL (no necesitas escribir SQL)
+  Query / Consulta       = Una pregunta que le haces a la BD (SELECT ...)
+  JSON                   = Formato de datos liviano para comunicar frontend y backend
+  API                    = Una interfaz que el backend expone para que el frontend
+                           pueda pedir/guardar datos

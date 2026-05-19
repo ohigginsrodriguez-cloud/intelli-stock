@@ -48,7 +48,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
           <PackageSearch className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold">IntelliStock</span>
+          <span className="text-2xl font-bold">InteliStock</span>
         </div>
         <div className="bg-card border border-border rounded-xl p-8">
           <h1 className="text-xl font-semibold text-center">Crear Cuenta</h1>

@@ -1,5 +1,5 @@
 #!/bin/bash
-# IntelliStock - Inicio rápido
+# InteliStock - Inicio rápido
 # =============================
 # Uso: ./run.sh
 #
@@ -13,7 +13,7 @@ FRONTEND_DIR="$PROJECT_DIR/frontend"
 PYTHON="${PYTHON:-python3}"
 
 echo "========================================"
-echo "  IntelliStock - Iniciando servicios"
+echo "  InteliStock - Iniciando servicios"
 echo "========================================"
 
 # ─── 1. Verificar PostgreSQL ─────────────────────────────────
@@ -29,17 +29,17 @@ else
     exit 1
 fi
 
-# Crear BD si no existe (usando el usuario intellistock si ya existe)
+# Crear BD si no existe (usando el usuario intelistock si ya existe)
 python3 -c "
 import subprocess, sys
 try:
-    subprocess.run(['psql', '-U', 'intellistock', '-h', 'localhost', '-d', 'intellistock', '-c', 'SELECT 1'],
-        capture_output=True, env={**__import__('os').environ, 'PGPASSWORD': 'intellistock123'})
-    print('  Base de datos intellistock OK')
+    subprocess.run(['psql', '-U', 'intelistock', '-h', 'localhost', '-d', 'intelistock', '-c', 'SELECT 1'],
+        capture_output=True, env={**__import__('os').environ, 'PGPASSWORD': 'intelistock123'})
+    print('  Base de datos intelistock OK')
 except:
     print('  Base de datos no encontrada. Crea la BD manualmente:')
-    print('    sudo -u postgres psql -c \"CREATE USER intellistock WITH PASSWORD \\\"intellistock123\\\";\"')
-    print('    sudo -u postgres psql -c \"CREATE DATABASE intellistock OWNER intellistock;\"')
+    print('    sudo -u postgres psql -c \"CREATE USER intelistock WITH PASSWORD \\\"intelistock123\\\";\"')
+    print('    sudo -u postgres psql -c \"CREATE DATABASE intelistock OWNER intelistock;\"')
     sys.exit(1)
 "
 
@@ -94,7 +94,7 @@ echo "  Backend:   http://localhost:8000/api/"
 echo "  Admin:     http://localhost:8000/admin/"
 echo ""
 echo "  Credenciales:"
-echo "    Email: admin@intellistock.com"
+echo "    Email: admin@intelistock.com"
 echo "    Pass:  admin123"
 echo ""
 echo "  Presiona Ctrl+C para detener todo"

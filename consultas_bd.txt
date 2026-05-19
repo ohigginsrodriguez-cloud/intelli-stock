@@ -1,0 +1,124 @@
+10 CONSULTAS SQL MUY SENCILLAS PARA INTELISTOCK
+===============================================
+
+Todas usan una sola tabla. Nada de JOIN, GROUP BY, CASE ni subconsultas.
+
+
+1. Todos los productos activos
+   Propósito: Ver la lista completa de productos del negocio.
+
+   SELECT id_producto, nombre, stock, precio_venta, costo
+   FROM producto
+   WHERE is_active = TRUE
+   ORDER BY nombre;
+
+   SELECT → elige las columnas
+   FROM   → de qué tabla
+   WHERE  → filtro (solo activos)
+   ORDER BY → ordena por nombre alfabéticamente
+
+
+2. Productos con stock bajo (stock <= stock_minimo)
+   Propósito: Saber qué productos necesitan reabastecerse.
+
+   SELECT nombre, stock, stock_minimo
+   FROM producto
+   WHERE stock <= stock_minimo AND is_active = TRUE
+   ORDER BY stock;
+
+   stock <= stock_minimo significa "lo que tengo es menor o igual al mínimo"
+   AND = las dos condiciones deben cumplirse
+
+
+3. Productos que NO tienen stock (stock = 0)
+   Propósito: Ver qué productos están agotados.
+
+   SELECT nombre, stock, stock_minimo
+   FROM producto
+   WHERE stock = 0 AND is_active = TRUE
+   ORDER BY nombre;
+
+   = 0 significa "exactamente cero unidades"
+
+
+4. Los 5 productos más caros (precio_venta más alto)
+   Propósito: Saber cuáles son los productos que valen más dinero.
+
+   SELECT nombre, precio_venta, stock
+   FROM producto
+   WHERE is_active = TRUE
+   ORDER BY precio_venta DESC
+   LIMIT 5;
+
+   ORDER BY ... DESC = de mayor a menor
+   LIMIT 5 = solo las primeras 5 filas
+
+
+5. Los 5 productos con más stock
+   Propósito: Ver qué productos tengo en mayor cantidad.
+
+   SELECT nombre, stock
+   FROM producto
+   WHERE is_active = TRUE
+   ORDER BY stock DESC
+   LIMIT 5;
+
+   Misma lógica que la anterior pero ordenando por stock
+
+
+6. Ventas del día de hoy
+   Propósito: Ver las ventas que se han hecho hoy.
+
+   SELECT id_venta, total, fecha, notas
+   FROM venta
+   WHERE fecha::date = CURRENT_DATE
+   ORDER BY fecha DESC;
+
+   fecha::date = convierte la fecha-hora a solo fecha
+   CURRENT_DATE = la fecha de hoy
+   Así comparo si la venta es de hoy
+
+
+7. Las 10 ventas más recientes
+   Propósito: Ver las últimas ventas registradas.
+
+   SELECT id_venta, total, fecha
+   FROM venta
+   ORDER BY fecha DESC
+   LIMIT 10;
+
+   ORDER BY fecha DESC = las más recientes primero
+   LIMIT 10 = solo 10 resultados
+
+
+8. Proveedores registrados (activos)
+   Propósito: Ver la lista de proveedores del negocio.
+
+   SELECT id_proveedor, nombre, contacto, telefono
+   FROM proveedor
+   WHERE is_active = TRUE
+   ORDER BY nombre;
+
+   Muy parecido a la consulta 1, pero con proveedores
+
+
+9. Cuántos productos tengo en total
+   Propósito: Saber el tamaño del inventario.
+
+   SELECT COUNT(*) AS cantidad_productos
+   FROM producto
+   WHERE is_active = TRUE;
+
+   COUNT(*) = cuenta todas las filas que cumplan la condición
+   AS = le pone un nombre a la columna del resultado
+
+
+10. Cuántas alertas sin leer tengo
+    Propósito: Saber si hay alertas pendientes por revisar.
+
+    SELECT COUNT(*) AS alertas_pendientes
+    FROM alerta
+    WHERE leida = FALSE;
+
+    Misma idea: COUNT(*) cuenta filas
+    leida = FALSE significa "no leída"
